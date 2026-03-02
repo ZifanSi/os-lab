@@ -4,8 +4,7 @@
 - Stanislav Serbezov
 
 ## Individual Contributions
-Both members worked together on the code, logic, testing, debugging, and overall program structure.
-
+Both members worked together on the code, features, logic, tests, debugs.
 ## File
 - `A2.c`
 
@@ -17,8 +16,15 @@ Compile:
 Run:
 `./A2 5`
 
-## Output: 
-```
+## Output
+
+The program prints its output directly in the terminal.  
+It also generates a log file for debugging under `/logs`.
+(So every printf(...) becomes log_printf(...) as well)
+
+Example output:
+
+```text
 TA is sleeping.
 Student 3 wakes up the TA and gets immediate help.
 TA starts helping student 3 immediately.
@@ -38,10 +44,8 @@ TA calls student 1. Waiting students left: 1
 
 TA finished helping student 1.
 TA calls student 5. Waiting students left: 0
-... LOOPS (+ LOGS IN /logs)
-
+... continues looping (full logs are also written to `/logs`)
 ```
-
 
 ## Program Features
 - **A. Setup**
