@@ -10,28 +10,36 @@ Both members worked together on the code, synchronization logic, testing, debugg
 - `A2.c`
 
 ## Compile and Run
-- Compile: `gcc -pthread A2.c -o A2`
-- Run: `./A2 5`
+
+Compile:
+`gcc -pthread A2.c -o A2`
+
+Run:
+`./A2 5`
 
 ## Output: 
 ```
 TA is sleeping.
-Student 1 is programming for 1 second.
-Student 1 wakes up the TA and gets immediate help.
-TA starts helping student 1 immediately.
-TA is helping student 1 for 2 seconds.
+Student 3 wakes up the TA and gets immediate help.
+TA starts helping student 3 immediately.
+TA is helping student 3 for 2 seconds.
+
 Student 2 sits in chair 0.
-Student 2 is waiting. Total waiting: 1
-Student 3 sits in chair 1.
-Student 3 is waiting. Total waiting: 2
-TA finished helping student 1.
-TA calls student 2. Waiting students left: 1
+Student 1 sits in chair 1.
+Student 5 sits in chair 2.
+Student 4 found no empty chair and will come back later.
+
+TA finished helping student 3.
+TA calls student 2. Waiting students left: 2
 Student 2 goes into the office for help.
-TA is helping student 2 for 1 second.
-Student 4 sits in chair 2.
-Student 4 is waiting. Total waiting: 2
-Student 5 found no empty chair and will come back later.
-(LOOPS + LOGS IN /logs)
+
+TA finished helping student 2.
+TA calls student 1. Waiting students left: 1
+
+TA finished helping student 1.
+TA calls student 5. Waiting students left: 0
+... LOOPS (+ LOGS IN /logs)
+
 ```
 
 
