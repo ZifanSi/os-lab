@@ -1,6 +1,6 @@
 /*
- * A Zifan SI
- * Stanislav Serbezov
+ * Author: Zifan SI
+ * Author: Stanislav Serbezov
  *
  * A. Setup
  * a1. Read number of students from command line
