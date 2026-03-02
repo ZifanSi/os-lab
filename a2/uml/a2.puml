@@ -1,94 +1,47 @@
 @startuml
-title Sleeping TA - Activity Diagram (Updated Labels)
-
 start
 
-partition "Main" {
-  :a1. Read number of students;
-  :a2. Validate input;
-  :a3. Seed random generator;
+:A. Setup;
+:a1. Read number of students;
+:a2. Initialize shared variables;
+:a3. Initialize mutex and semaphores;
+:a4. Allocate arrays for threads, ids, semaphores;
 
-  :a4. Initialize shared variables;
-  :a5. Initialize chair array;
-
-  :a6. Initialize mutex;
-  :a7. Initialize students_waiting semaphore;
-
-  :a8. Allocate student_tids;
-  :a9. Allocate student_ids;
-  :a10. Allocate student_called;
-  :a11. Allocate student_done;
-  :a12. Initialize per-student semaphores;
-
-  :b1. Create 1 TA thread;
-  :b2. Create n student threads;
-  :b3. Give each student a unique id;
-  :b4. Join threads;
-}
+:B. Create threads;
+:b1. Create 1 TA thread;
+:b2. Create n student threads;
+:b3. Give each student a unique id;
 
 fork
-
-partition "TA Thread" {
-  while (program running?)
-    :t1. Check waiting == 0;
-    :d1. Lock mutex;
-
-    if (waiting == 0?) then (yes)
-      :t2. Set ta_sleeping = 1;
-      :c7. TA sleeps;
+  repeat
+    :TA thread;
+    if (c7. No student waiting\nand no current student?) then (yes)
+      :TA sleeps;
     endif
-
-    :d1. Unlock mutex;
-    :d2. Wait on students_waiting;
-
-    :d1. Lock mutex;
-    :t4. Set ta_sleeping = 0;
-    :t5. Remove next student from chairs[next_teach];
-    :t6. Update next_teach;
-    :t7. Decrement waiting;
-    :c8. TA takes next student from queue;
-    :d1. Unlock mutex;
-
-    :d3. Post student_called[id - 1];
+    :d2. Wait for students_waiting;
+    :Choose current student\nor next waiting student;
+    :d3. Signal student_called[i];
     :c6. Help one student;
-    :t9. Run help_time(id);
-    :d4. Post student_done[id - 1];
-  endwhile
-}
+    :d4. Signal student_done[i];
+  repeat while (running)
 
 fork again
+  repeat
+    :Student thread;
+    :c1. Program for random time;
+    :c2. Ask TA for help;
 
-partition "Student Thread(s)" {
-  while (student active?)
-    :c1 / p1. Program for random time;
-    :c2 / p2. Ask TA for help;
-
-    :d1. Lock mutex;
-    :p3. Check waiting < CHAIRS;
-
-    if (chair available?) then (yes)
-      :c3 / p4. Store id in chairs[next_seat];
-      :p5. Update next_seat;
-      :p6. Increment waiting;
-
-      if (TA sleeping?) then (yes)
-        :c5 / p7. Student wakes TA;
-      else (no)
-        :Student stays in queue;
-      endif
-
-      :d1. Unlock mutex;
-      :d2 / p8. Post students_waiting;
-      :d3 / p9. Wait on student_called[id - 1];
-      :c9 / p10. Enter office;
-      :d4 / p11. Wait on student_done[id - 1];
-      :c10 / p12. Leave office;
+    if (TA free and\nno one waiting?) then (yes)
+      :c5. Wake TA if sleeping;
+      :Get immediate help;
     else (no)
-      :d1. Unlock mutex;
-      :c4 / p13. Come back later;
+      if (c3. Chair available?) then (yes)
+        :Wait in chair;
+      else (no)
+        :c4. Come back later;
+      endif
     endif
-  endwhile
-}
+  repeat while (running)
 
 end fork
 
