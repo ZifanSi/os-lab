@@ -5,7 +5,7 @@
 - Stanislav Serbezov
 
 ## Individual Contributions
-Both members worked together on the code, TLB logic, page table logic, page fault handling, tests, and debugging.
+Both members worked together on the code, tests, and debugging.
 
 ## File
 - `assignment3.c`
