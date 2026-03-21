@@ -1,3 +1,15 @@
+/*
+Author: Zifan Si, Stanislav Serbezov
+
+Steps:
+1. Open input files and initialize page table, frame table, and TLB
+2. Read each logical address and get page number + offset
+3. Check TLB first, then check page table
+4. If page is not in memory, handle page fault and load page into RAM
+5. Build physical address, print value, and update counters
+6. Print final statistics and clean up
+*/
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +33,14 @@ typedef struct {
     int valid;
 } TLBItem;
 
-/* Step 1: search page in TLB */
+// Helpers
+/*
+ * Arguments:
+ *   tlb  - TLBItem array
+ *   page - int
+ * Returns:
+ *   int - frame number if page is found in the TLB, otherwise -1
+ */
 int findInTLB(TLBItem tlb[], int page) {
     int i;
     for (i = 0; i < TLB_COUNT; i++) {
@@ -32,7 +51,15 @@ int findInTLB(TLBItem tlb[], int page) {
     return -1;
 }
 
-/* Step 2: add/update TLB entry + more helpers*/
+/*
+ * Arguments:
+ *   tlb    - TLBItem array
+ *   page   - int
+ *   frame  - int
+ *   tlbPos - int * (current FIFO position in the TLB)
+ * Returns:
+ *   void
+ */
 void addToTLB(TLBItem tlb[], int page, int frame, int *tlbPos) {
     tlb[*tlbPos].page = page;
     tlb[*tlbPos].frame = frame;
@@ -40,6 +67,16 @@ void addToTLB(TLBItem tlb[], int page, int frame, int *tlbPos) {
     *tlbPos = (*tlbPos + 1) % TLB_COUNT;
 }
 
+/* 
+Arguments:
+- tlb: TLBItem array
+- oldPage: int
+- newPage: int
+- frame: int
+
+Returns:
+- int: 1 if replaced, 0 otherwise
+*/
 int replaceTLBEntry(TLBItem tlb[], int oldPage, int newPage, int frame) {
     int i;
     for (i = 0; i < TLB_COUNT; i++) {
@@ -50,26 +87,6 @@ int replaceTLBEntry(TLBItem tlb[], int oldPage, int newPage, int frame) {
         }
     }
     return 0;
-}
-
-int getPageFrame(int pageTable[], int page) {
-    if (page < 0 || page >= PAGE_COUNT) return -1;
-    return pageTable[page];
-}
-
-void setPageMapping(int pageTable[], int page, int frame) {
-    if (page >= 0 && page < PAGE_COUNT) {
-        pageTable[page] = frame;
-    }
-}
-
-void invalidateTLBEntry(TLBItem tlb[], int page) {
-    for (int i = 0; i < TLB_COUNT; i++) {
-        if (tlb[i].page == page) {
-            tlb[i].valid = 0; // Mark as empty/invalid
-            tlb[i].page = -1;
-        }
-    }
 }
 
 int main(void) {
@@ -91,7 +108,7 @@ int main(void) {
     char line[64];
     int i;
 
-    /* Step 3: open files and initialize tables */
+    /* Step 1: open input files and initialize tables */
     addressFile = fopen("addresses.txt", "r");
     if (addressFile == NULL) {
         perror("addresses.txt");
@@ -127,7 +144,7 @@ int main(void) {
         tlb[i].valid = 0;
     }
 
-    /* Step 4: read each logical address and split into page + offset */
+    /* Step 2: read each logical address and get page number + offset */
     while (fgets(line, sizeof(line), addressFile) != NULL) {
         int logicalAddress;
         int page;
@@ -141,7 +158,7 @@ int main(void) {
         page = logicalAddress >> PAGE_BITS;
         offset = logicalAddress & OFFSET_MASK;
 
-        /* Step 5: check TLB, then page table, then handle page fault if needed */
+        /* Step 3: check TLB first, then check page table */
         frame = findInTLB(tlb, page);
 
         if (frame != -1) {
@@ -149,6 +166,7 @@ int main(void) {
         } else {
             frame = pageTable[page];
 
+            /* Step 4: if page is not in memory, handle page fault and load page into RAM */
             if (frame == -1) {
                 faults++;
 
@@ -187,7 +205,7 @@ int main(void) {
             }
         }
 
-        /* Step 6: build physical address, print value, and count stats */
+        /* Step 5: build physical address, print value, and update counters */
         physicalAddress = frame * PAGE_SIZE + offset;
         value = ram[physicalAddress];
 
@@ -197,7 +215,7 @@ int main(void) {
         total++;
     }
 
-    /* Step 7: print final results and clean up */
+    /* Step 6: print final statistics and clean up */
     printf("Total addresses = %d\n", total);
     printf("Page_faults = %d\n", faults);
     printf("TLB Hits = %d\n", hits);
