@@ -1,0 +1,38 @@
+@startuml
+start
+
+:ID1: Initialize file system;
+:ID1: Show empty directory and free blocks;
+
+:ID2: Create alpha.txt;
+:ID2: Allocate index and data blocks;
+:ID2: List files and print free blocks;
+
+:ID3: Create beta.txt;
+:ID3: Allocate index and data blocks;
+:ID3: List files and print free blocks;
+
+:ID4: Delete alpha.txt;
+:ID4: Return data blocks and index block;
+:ID4: List files and print free blocks;
+
+:ID5: Create gamma.txt;
+:ID5: Allocate index and data blocks;
+:ID5: List files and print free blocks;
+
+:ID6: Create delta.txt;
+:ID6: Allocate index and data blocks;
+:ID6: List files and print free blocks;
+
+:ID7: Delete beta.txt;
+:ID7: Return file blocks and FIB ID;
+:ID7: List files and print free blocks;
+
+:ID8: Delete gamma.txt;
+:ID8: Return file blocks and FIB ID;
+:ID8: List files and print free blocks;
+
+:ID9: Delete delta.txt;
+:ID9: Show final directory and free blocks;
+stop
+@enduml
