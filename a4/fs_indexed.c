@@ -6,7 +6,7 @@
 
 FileSystem fs;
 
-static BlockNode *makeBlockNode(int blockNumber) {
+static BlockNode *createNode(int blockNumber) {
     BlockNode *node = malloc(sizeof(*node));
 
     if (node == NULL) {
@@ -18,20 +18,20 @@ static BlockNode *makeBlockNode(int blockNumber) {
     return node;
 }
 
-static void clearFileEntry(FileInformationBlock *fib) {
-    fib->inUse = 0;
-    fib->fibId = -1;
-    fib->filename[0] = '\0';
-    fib->sizeBytes = 0;
-    fib->indexBlock = -1;
-    fib->dataBlockCount = 0;
+static void resetFileEntry(FileInformationBlock *file) {
+    file->inUse = 0;
+    file->fibId = -1;
+    file->filename[0] = '\0';
+    file->sizeBytes = 0;
+    file->indexBlock = -1;
+    file->dataBlockCount = 0;
 
     for (int i = 0; i < FS_MAX_DATA_BLOCKS_PER_FILE; ++i) {
-        fib->dataBlocks[i] = -1;
+        file->dataBlocks[i] = -1;
     }
 }
 
-static int blocksRequired(size_t sizeBytes) {
+static int getDataBlockCount(size_t sizeBytes) {
     if (sizeBytes == 0) {
         return 0;
     }
@@ -48,14 +48,24 @@ void destroyFS(void) {
         current = next;
     }
 
-    memset(&fs, 0, sizeof(fs));
+    fs.vcb.totalBlocks = 0;
+    fs.vcb.blockSize = 0;
+    fs.vcb.freeBlockCount = 0;
+    fs.vcb.fibIdHead = 0;
+    fs.vcb.fibIdTail = 0;
+    fs.vcb.fibIdCount = 0;
+    fs.vcb.freeHead = NULL;
+    fs.vcb.freeTail = NULL;
 
     for (int i = 0; i < FS_MAX_FILES; ++i) {
-        clearFileEntry(&fs.files[i]);
+        fs.vcb.availableFibIds[i] = 0;
+        resetFileEntry(&fs.files[i]);
     }
 }
 
 void initFS(void) {
+    BlockNode *node;
+
     destroyFS();
 
     fs.vcb.totalBlocks = FS_TOTAL_BLOCKS;
@@ -66,11 +76,26 @@ void initFS(void) {
 
     for (int i = 0; i < FS_MAX_FILES; ++i) {
         fs.vcb.availableFibIds[i] = i;
-        clearFileEntry(&fs.files[i]);
+        resetFileEntry(&fs.files[i]);
     }
 
     for (int blockNumber = 0; blockNumber < FS_TOTAL_BLOCKS; ++blockNumber) {
-        returnFreeBlock(blockNumber);
+        node = createNode(blockNumber);
+
+        if (node == NULL) {
+            fprintf(stderr, "Could not initialize the free block list.\n");
+            destroyFS();
+            return;
+        }
+
+        if (fs.vcb.freeTail == NULL) {
+            fs.vcb.freeHead = node;
+        } else {
+            fs.vcb.freeTail->next = node;
+        }
+
+        fs.vcb.freeTail = node;
+        fs.vcb.freeBlockCount++;
     }
 
     printf("Filesystem initialized with %d blocks of %d bytes each.\n",
@@ -99,10 +124,10 @@ int allocateFreeBlock(void) {
 }
 
 void returnFreeBlock(int blockNumber) {
-    BlockNode *node = makeBlockNode(blockNumber);
+    BlockNode *node = createNode(blockNumber);
 
     if (node == NULL) {
-        fprintf(stderr, "Failed to return block %d to the free list.\n", blockNumber);
+        fprintf(stderr, "Could not return block %d to the free list.\n", blockNumber);
         return;
     }
 
@@ -158,10 +183,10 @@ int createFile(const char *filename, size_t sizeBytes) {
     int indexBlock;
     int dataBlockCount;
     int totalBlocksNeeded;
-    FileInformationBlock *fib;
+    FileInformationBlock *fileSlot;
 
     if (filename == NULL || filename[0] == '\0') {
-        fprintf(stderr, "Create failed: filename is required.\n");
+        fprintf(stderr, "Create failed: filename is missing.\n");
         return -1;
     }
 
@@ -175,17 +200,17 @@ int createFile(const char *filename, size_t sizeBytes) {
         return -1;
     }
 
-    dataBlockCount = blocksRequired(sizeBytes);
+    dataBlockCount = getDataBlockCount(sizeBytes);
 
     if (dataBlockCount > FS_MAX_DATA_BLOCKS_PER_FILE) {
-        fprintf(stderr, "Create failed: '%s' exceeds index block capacity.\n", filename);
+        fprintf(stderr, "Create failed: '%s' is too large for one index block.\n", filename);
         return -1;
     }
 
     totalBlocksNeeded = dataBlockCount + 1;
 
     if (fs.vcb.fibIdCount == 0) {
-        fprintf(stderr, "Create failed: no file information blocks are available.\n");
+        fprintf(stderr, "Create failed: maximum number of files reached.\n");
         return -1;
     }
 
@@ -205,42 +230,43 @@ int createFile(const char *filename, size_t sizeBytes) {
 
     if (indexBlock == -1) {
         returnFileInformationBlockID(fibId);
-        fprintf(stderr, "Create failed: could not allocate an index block.\n");
+        fprintf(stderr, "Create failed: could not allocate the index block.\n");
         return -1;
     }
 
-    fib = &fs.files[fibId];
-    clearFileEntry(fib);
-    fib->fibId = fibId;
-    fib->indexBlock = indexBlock;
-    fib->sizeBytes = sizeBytes;
-    fib->dataBlockCount = dataBlockCount;
-    strncpy(fib->filename, filename, FS_MAX_FILENAME - 1);
-    fib->filename[FS_MAX_FILENAME - 1] = '\0';
+    fileSlot = &fs.files[fibId];
+    resetFileEntry(fileSlot);
+    fileSlot->fibId = fibId;
+    fileSlot->indexBlock = indexBlock;
+    fileSlot->sizeBytes = sizeBytes;
+    fileSlot->dataBlockCount = dataBlockCount;
+    strncpy(fileSlot->filename, filename, FS_MAX_FILENAME - 1);
+    fileSlot->filename[FS_MAX_FILENAME - 1] = '\0';
 
+    /* The sample output assumes the index block is taken first. */
     for (int i = 0; i < dataBlockCount; ++i) {
         int blockNumber = allocateFreeBlock();
 
         if (blockNumber == -1) {
             for (int j = 0; j < i; ++j) {
-                returnFreeBlock(fib->dataBlocks[j]);
+                returnFreeBlock(fileSlot->dataBlocks[j]);
             }
 
             returnFreeBlock(indexBlock);
             returnFileInformationBlockID(fibId);
-            clearFileEntry(fib);
+            resetFileEntry(fileSlot);
             fprintf(stderr, "Create failed: block allocation rolled back for '%s'.\n", filename);
             return -1;
         }
 
-        fib->dataBlocks[i] = blockNumber;
+        fileSlot->dataBlocks[i] = blockNumber;
     }
 
-    fib->inUse = 1;
+    fileSlot->inUse = 1;
 
     printf("File '%s' created with %d data blocks + 1 index block.\n",
-           fib->filename,
-           fib->dataBlockCount);
+           fileSlot->filename,
+           fileSlot->dataBlockCount);
     return 0;
 }
 
@@ -269,13 +295,14 @@ int deleteFile(const char *filename) {
     strncpy(deletedName, fs.files[fileIndex].filename, FS_MAX_FILENAME - 1);
     deletedName[FS_MAX_FILENAME - 1] = '\0';
 
+    /* Return data blocks first so the free-list order matches the sample. */
     for (int i = 0; i < dataBlockCount; ++i) {
         returnFreeBlock(fs.files[fileIndex].dataBlocks[i]);
     }
 
     returnFreeBlock(indexBlock);
     returnFileInformationBlockID(fibId);
-    clearFileEntry(&fs.files[fileIndex]);
+    resetFileEntry(&fs.files[fileIndex]);
 
     printf("File '%s' deleted.\n", deletedName);
     return 0;
