@@ -10,31 +10,36 @@
 #define MAX_FILES 10
 #define MAX_FILENAME_LEN 64
 #define MAX_DATA_BLOCKS_PER_FILE (BLOCK_SIZE / (int)sizeof(int))
+// init: free 0..63 = 64
 
-/*
- * Each logical disk block is 1 KB.
- */
+// a.txt: 1500 bytes
+// index = 0
+// data = 1,2
+
+// b.bin: 4096 bytes
+// index = 3
+// data = 4,5,6,7
+
+// empty.dat: 0 bytes
+// index = 8
+// data = none
+
+// after create: free = 55
+// delete a.txt -> return 1,2,0
+// after delete: free = 58
+
 typedef struct Block {
     unsigned char data[BLOCK_SIZE];
     int blockNumber;
 } Block;
 
-/*
- * Linked-list node used to simulate the free block list.
- */
+
 typedef struct FreeBlockNode {
     int blockNumber;
     struct FreeBlockNode *next;
 } FreeBlockNode;
 
-/*
- * File Information Block (FIB)
- * - fibID: unique file information block id
- * - fileName: file name
- * - fileSize: file size in bytes
- * - blockCount: number of DATA blocks used by the file
- * - indexBlock: pointer to the block that stores the data-block numbers
- */
+
 typedef struct FIB {
     int fibID;
     char fileName[MAX_FILENAME_LEN];
@@ -43,9 +48,7 @@ typedef struct FIB {
     Block *indexBlock;
 } FIB;
 
-/*
- * Volume Control Block / file system structure.
- */
+
 typedef struct VolumeControlBlock {
     FreeBlockNode *freeHead;
     FreeBlockNode *freeTail;
@@ -55,10 +58,7 @@ typedef struct VolumeControlBlock {
     int fileCount;
 } VolumeControlBlock;
 
-/*
- * Global simulated file system.
- * Kept static so the header can be included in one .c file directly.
- */
+
 static VolumeControlBlock fs;
 
 /* ========================= Helper functions ========================= */
