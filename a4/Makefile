@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
-TARGET = a4_practice.exe
+TARGET = fs_sim
 SRC = main.c fs_indexed.c
 
 all: $(TARGET)
