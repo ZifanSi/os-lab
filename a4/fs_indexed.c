@@ -40,6 +40,12 @@ static int blocksNeeded(size_t sizeBytes) {
     return (int)((sizeBytes + FS_BLOCK_SIZE - 1) / FS_BLOCK_SIZE);
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   void - frees all free-list nodes and resets the file system state
+ */
 void destroyFS(void) {
     BlockNode *curr = fs.vcb.freeHead;
     BlockNode *temp;
@@ -66,6 +72,12 @@ void destroyFS(void) {
     }
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   void - initializes the file system, free block list, and FIB ID queue
+ */
 void initFS(void) {
     int i;
     BlockNode *newNode;
@@ -110,6 +122,12 @@ void initFS(void) {
            fs.vcb.totalBlocks, fs.vcb.blockSize);
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   int - block number from the head of the free list, or -1 if none exist
+ */
 int allocateFreeBlock(void) {
     BlockNode *temp;
     int blockNumber;
@@ -132,6 +150,12 @@ int allocateFreeBlock(void) {
     return blockNumber;
 }
 
+/*
+ * Arguments:
+ *   blockNumber - block number to add back to the free list
+ * Returns:
+ *   void - appends the block to the tail of the free list
+ */
 void returnFreeBlock(int blockNumber) {
     BlockNode *newNode = makeBlockNode(blockNumber);
 
@@ -151,6 +175,12 @@ void returnFreeBlock(int blockNumber) {
     fs.vcb.freeBlockCount++;
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   int - next available FIB ID, or -1 if no IDs are available
+ */
 int getFileInformationBlockID(void) {
     int fibId;
 
@@ -165,6 +195,12 @@ int getFileInformationBlockID(void) {
     return fibId;
 }
 
+/*
+ * Arguments:
+ *   fibId - file information block ID to return
+ * Returns:
+ *   void - puts the FIB ID back into the available ID queue
+ */
 void returnFileInformationBlockID(int fibId) {
     if (fibId < 0 || fibId >= FS_MAX_FILES) {
         return;
@@ -179,6 +215,12 @@ void returnFileInformationBlockID(int fibId) {
     fs.vcb.fibIdCount++;
 }
 
+/*
+ * Arguments:
+ *   filename - name of the file to search for
+ * Returns:
+ *   int - file index if found, or -1 if the file does not exist
+ */
 int findFileIndex(const char *filename) {
     int i;
 
@@ -195,6 +237,13 @@ int findFileIndex(const char *filename) {
     return -1;
 }
 
+/*
+ * Arguments:
+ *   filename  - name of the file to create
+ *   sizeBytes - size of the file in bytes
+ * Returns:
+ *   int - 0 if the file is created successfully, or -1 on failure
+ */
 int createFile(const char *filename, size_t sizeBytes) {
     int fibId;
     int indexBlock;
@@ -289,6 +338,12 @@ int createFile(const char *filename, size_t sizeBytes) {
     return 0;
 }
 
+/*
+ * Arguments:
+ *   filename - name of the file to delete
+ * Returns:
+ *   int - 0 if the file is deleted successfully, or -1 on failure
+ */
 int deleteFile(const char *filename) {
     int index;
     int i;
@@ -319,6 +374,12 @@ int deleteFile(const char *filename) {
     return 0;
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   void - prints all files currently stored in the root directory
+ */
 void listFiles(void) {
     int i;
     int count = 0;
@@ -344,6 +405,12 @@ void listFiles(void) {
     printf("\n");
 }
 
+/*
+ * Arguments:
+ *   none
+ * Returns:
+ *   void - prints the free block list and total number of free blocks
+ */
 void printFreeBlocks(void) {
     BlockNode *curr = fs.vcb.freeHead;
 
