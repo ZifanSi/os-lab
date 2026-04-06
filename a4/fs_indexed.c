@@ -118,7 +118,7 @@ void initFS(void) {
         fs.vcb.freeBlockCount++;
     }
 
-    printf("File system initialized: %d blocks, %d bytes each.\n",
+    printf("Filesystem initialized with %d blocks of %d bytes each.\n",
            fs.vcb.totalBlocks, fs.vcb.blockSize);
 }
 
@@ -334,7 +334,8 @@ int createFile(const char *filename, size_t sizeBytes) {
         fs.files[fibId].dataBlocks[i] = block;
     }
 
-    printf("File created: %s\n", filename);
+    printf("File '%s' created with %d data blocks + 1 index block.\n",
+           filename, numDataBlocks);
     return 0;
 }
 
@@ -370,7 +371,7 @@ int deleteFile(const char *filename) {
     clearFileEntry(&fs.files[index]);
     returnFileInformationBlockID(fibId);
 
-    printf("File deleted: %s\n", filename);
+    printf("File '%s' deleted.\n", filename);
     return 0;
 }
 
@@ -394,7 +395,7 @@ void listFiles(void) {
 
     for (i = 0; i < FS_MAX_FILES; i++) {
         if (fs.files[i].inUse) {
-            printf("%s | %llu bytes | %d data blocks | FIBID=%d\n",
+            printf("  %-10s | %6llu bytes | %2d data blocks | FIBID=%d\n",
                    fs.files[i].filename,
                    (unsigned long long)fs.files[i].sizeBytes,
                    fs.files[i].dataBlockCount,
@@ -414,12 +415,10 @@ void listFiles(void) {
 void printFreeBlocks(void) {
     BlockNode *curr = fs.vcb.freeHead;
 
-    printf("Free Blocks: ");
+    printf("Free Blocks (%d): ", fs.vcb.freeBlockCount);
     while (curr != NULL) {
-        printf("%d ", curr->blockNumber);
+        printf("[%d] -> ", curr->blockNumber);
         curr = curr->next;
     }
-    printf("\n");
-
-    printf("Total Free Blocks: %d\n\n", fs.vcb.freeBlockCount);
+    printf("NULL\n");
 }
