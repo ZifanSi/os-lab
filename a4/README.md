@@ -9,7 +9,10 @@
 ## Run
 `./fs_sim`
 
-## Submit Files
+## CLean
+`make clean`
+
+## Files
 - fs_indexed.h
 - fs_indexed.c
 - main.c
@@ -21,84 +24,72 @@
 
 
 ## Output
+
 frank@ubuntu:~/Desktop/3sh3$ cd a4
+frank@ubuntu:~/Desktop/3sh3/a4$ make clean
+rm -f fs_sim
 frank@ubuntu:~/Desktop/3sh3/a4$ make
 gcc -Wall -Wextra -std=c11 main.c fs_indexed.c -o fs_sim
 frank@ubuntu:~/Desktop/3sh3/a4$ ./fs_sim
-File system initialized: 64 blocks, 1024 bytes each.
+Filesystem initialized with 64 blocks of 1024 bytes each.
 
 Root Directory Listing (0 files):
 
-Free Blocks: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 
-Total Free Blocks: 64
-
-File created: alpha.txt
+Free Blocks (64): [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6] -> [7] -> [8] -> [9] -> [10] -> [11] -> [12] -> [13] -> [14] -> [15] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> NULL
+File 'alpha.txt' created with 3 data blocks + 1 index block.
 
 Root Directory Listing (1 files):
-alpha.txt | 3072 bytes | 3 data blocks | FIBID=0
+  alpha.txt  |   3072 bytes |  3 data blocks | FIBID=0
 
-Free Blocks: 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 
-Total Free Blocks: 60
-
-File created: beta.txt
+Free Blocks (60): [4] -> [5] -> [6] -> [7] -> [8] -> [9] -> [10] -> [11] -> [12] -> [13] -> [14] -> [15] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> NULL
+File 'beta.txt' created with 5 data blocks + 1 index block.
 
 Root Directory Listing (2 files):
-alpha.txt | 3072 bytes | 3 data blocks | FIBID=0
-beta.txt | 5120 bytes | 5 data blocks | FIBID=1
+  alpha.txt  |   3072 bytes |  3 data blocks | FIBID=0
+  beta.txt   |   5120 bytes |  5 data blocks | FIBID=1
 
-Free Blocks: 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 
-Total Free Blocks: 54
-
-File deleted: alpha.txt
+Free Blocks (54): [10] -> [11] -> [12] -> [13] -> [14] -> [15] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> NULL
+File 'alpha.txt' deleted.
 
 Root Directory Listing (1 files):
-beta.txt | 5120 bytes | 5 data blocks | FIBID=1
+  beta.txt   |   5120 bytes |  5 data blocks | FIBID=1
 
-Free Blocks: 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 
-Total Free Blocks: 58
-
-File created: gamma.txt
+Free Blocks (58): [10] -> [11] -> [12] -> [13] -> [14] -> [15] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> NULL
+File 'gamma.txt' created with 4 data blocks + 1 index block.
 
 Root Directory Listing (2 files):
-beta.txt | 5120 bytes | 5 data blocks | FIBID=1
-gamma.txt | 4096 bytes | 4 data blocks | FIBID=2
+  beta.txt   |   5120 bytes |  5 data blocks | FIBID=1
+  gamma.txt  |   4096 bytes |  4 data blocks | FIBID=2
 
-Free Blocks: 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 
-Total Free Blocks: 53
-
-File created: delta.txt
+Free Blocks (53): [15] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> NULL
+File 'delta.txt' created with 8 data blocks + 1 index block.
 
 Root Directory Listing (3 files):
-beta.txt | 5120 bytes | 5 data blocks | FIBID=1
-gamma.txt | 4096 bytes | 4 data blocks | FIBID=2
-delta.txt | 8192 bytes | 8 data blocks | FIBID=3
+  beta.txt   |   5120 bytes |  5 data blocks | FIBID=1
+  gamma.txt  |   4096 bytes |  4 data blocks | FIBID=2
+  delta.txt  |   8192 bytes |  8 data blocks | FIBID=3
 
-Free Blocks: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 
-Total Free Blocks: 44
-
-File deleted: beta.txt
+Free Blocks (44): [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> NULL
+File 'beta.txt' deleted.
 
 Root Directory Listing (2 files):
-gamma.txt | 4096 bytes | 4 data blocks | FIBID=2
-delta.txt | 8192 bytes | 8 data blocks | FIBID=3
+  gamma.txt  |   4096 bytes |  4 data blocks | FIBID=2
+  delta.txt  |   8192 bytes |  8 data blocks | FIBID=3
 
-Free Blocks: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 5 6 7 8 9 4 
-Total Free Blocks: 50
-
-File deleted: gamma.txt
+Free Blocks (50): [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> [5] -> [6] -> [7] -> [8] -> [9] -> [4] -> NULL
+File 'gamma.txt' deleted.
 
 Root Directory Listing (1 files):
-delta.txt | 8192 bytes | 8 data blocks | FIBID=3
+  delta.txt  |   8192 bytes |  8 data blocks | FIBID=3
 
-Free Blocks: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 5 6 7 8 9 4 11 12 13 14 10 
-Total Free Blocks: 55
-
-File deleted: delta.txt
+Free Blocks (55): [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> [5] -> [6] -> [7] -> [8] -> [9] -> [4] -> [11] -> [12] -> [13] -> [14] -> [10] -> NULL
+File 'delta.txt' deleted.
 
 Root Directory Listing (0 files):
 
-Free Blocks: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 1 2 3 0 5 6 7 8 9 4 11 12 13 14 10 16 17 18 19 20 21 22 23 15 
-Total Free Blocks: 64
+Free Blocks (64): [24] -> [25] -> [26] -> [27] -> [28] -> [29] -> [30] -> [31] -> [32] -> [33] -> [34] -> [35] -> [36] -> [37] -> [38] -> [39] -> [40] -> [41] -> [42] -> [43] -> [44] -> [45] -> [46] -> [47] -> [48] -> [49] -> [50] -> [51] -> [52] -> [53] -> [54] -> [55] -> [56] -> [57] -> [58] -> [59] -> [60] -> [61] -> [62] -> [63] -> [1] -> [2] -> [3] -> [0] -> [5] -> [6] -> [7] -> [8] -> [9] -> [4] -> [11] -> [12] -> [13] -> [14] -> [10] -> [16] -> [17] -> [18] -> [19] -> [20] -> [21] -> [22] -> [23] -> [15] -> NULL
+frank@ubuntu:~/Desktop/3sh3/a4$ 
+
 
 
 ## UML WORLFLOW
